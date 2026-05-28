@@ -1,8 +1,6 @@
 from fastapi import FastAPI
+from app.api.routes.health import router as health_router
 
 app = FastAPI(title="AI Customer Retention Platform API")
 
-
-@app.get("/health")
-def health():
-    return {"status": "ok"}
+app.include_router(health_router)
