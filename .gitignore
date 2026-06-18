@@ -20,3 +20,6 @@ __pycache__/
 # OS Files
 .DS_Store
 Thumbs.db
+
+# Processed Data CSVs
+data/processed/*.csv
