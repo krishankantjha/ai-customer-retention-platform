@@ -1,16 +1,43 @@
-# React + Vite
+# RetainIQ Streamlit Web Portal
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This directory contains the Streamlit dashboard client for the RetainIQ platform.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Directory Structure & Views
 
-## React Compiler
+The portal interface is structured into modular tab views under the `views/` directory:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+* **`app.py`**: The application entrypoint. Configures global CSS styling, navigation sidebar, and route dispatching.
+* **`api_client.py`**: Handles API connections using `RetainIQAPIClient`.
+* **`views/auth_view.py`**: Provides the login form and handles session authentication token handshakes.
+* **`views/dashboard_view.py`**: Displays executive-level metrics, risk distributions, and at-risk queues.
+* **`views/explorer_view.py`**: Shows demographic summaries, churn drivers, local SHAP breakdowns, and save play recommendations.
+* **`views/counterfactual_view.py`**: Houses interactive sliders to model how telemetry modifications affect customer churn probability risk.
+* **`views/executive_view.py`**: Plots contract splits, tenure scatters, and OLS regression analysis lines.
+* **`views/explainability_view.py`**: Displays global model metrics, SHAP summary plots, and Beeswarm charts.
+* **`views/segments_view.py`**: Outlines customer segments built via K-Means++ clustering.
+* **`views/ingestion_view.py`**: Handles batch cohort file uploads and monitors preprocessing pipelines.
+* **`views/drift_view.py`**: Displays feature distributions, statistical tests, and PSI drift diagnostics.
+* **`views/settings_view.py`**: Contains profile settings, alert threshold adjustments, and webhook definitions.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Local Setup
+
+To run the analytical web portal locally:
+
+1. **Activate the Virtual Environment**:
+   ```bash
+   # Run from the project root
+   source venv/Scripts/activate
+   ```
+2. **Start the Streamlit Application**:
+   ```bash
+   # Navigate to the frontend folder
+   cd frontend/
+   
+   # Start the server
+   streamlit run app.py
+   ```
+   The portal should automatically launch in your default web browser at: http://localhost:8501
