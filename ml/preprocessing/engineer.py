@@ -171,6 +171,35 @@ def engineer_features(df: pd.DataFrame, monthly_charges_median: float) -> pd.Dat
         & (df["tenure"] <= 12)
     ).astype(int)
 
+    # 15. AvgMonthlyCharge
+    # Spending intensity per month of tenure. Prevent division-by-zero using tenure + 1.
+    df["AvgMonthlyCharge"] = df["TotalCharges"] / (df["tenure"] + 1)
+
+    # 16. num_services
+    # Sum of active client-facing subscriptions.
+    if pd.api.types.is_numeric_dtype(df["PhoneService"]):
+        _phone_sub = (df["PhoneService"] == 1).astype(int)
+    else:
+        _phone_sub = (df["PhoneService"] == "Yes").astype(int)
+
+    if pd.api.types.is_numeric_dtype(df["InternetService"]):
+        _internet_sub = (df["InternetService"] != 0).astype(int)
+    else:
+        _internet_sub = (df["InternetService"] != "No").astype(int)
+
+    _backup_sub = df["OnlineBackup"].eq("Yes").astype(int)
+    _support_sub = df["TechSupport"].eq("Yes").astype(int)
+    _streaming_sub = df[["StreamingTV", "StreamingMovies"]].eq("Yes").sum(axis=1)
+
+    df["num_services"] = _phone_sub + _internet_sub + _backup_sub + _support_sub + _streaming_sub
+
+    # 17. Ordinal Contract mapping
+    # Month-to-month -> 1, One year -> 12, Two year -> 24 to preserve monotonic signal.
+    # Note: done after other features that use Contract raw string values.
+    contract_map = {"Month-to-month": 1, "One year": 12, "Two year": 24}
+    if not pd.api.types.is_numeric_dtype(df["Contract"]):
+        df["Contract"] = df["Contract"].map(contract_map)
+
     logger.info("All engineered features created.")
 
     # Map Yes/No columns to 1/0
@@ -201,12 +230,18 @@ def engineer_features(df: pd.DataFrame, monthly_charges_median: float) -> pd.Dat
 
 # Smoke test running block. Run directly to test the module: python -m ml.preprocessing.engineer
 if __name__ == "__main__":
+    import sys
     import logging.config
     import yaml
 
     base_dir   = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    if base_dir not in sys.path:
+        sys.path.insert(0, base_dir)
+    from configs.dataset_config import config_loader
+
     config_path = os.path.join(base_dir, "configs", "logging_config.yaml")
-    clean_path  = os.path.join(base_dir, "data", "processed", "telco_churn_clean.csv")
+    config_clean_path = config_loader.training["data_paths"]["clean_data"]
+    clean_path = config_clean_path if os.path.isabs(config_clean_path) else os.path.join(base_dir, config_clean_path)
 
     # Set up logging
     if os.path.exists(config_path):
@@ -237,6 +272,7 @@ if __name__ == "__main__":
         "contract_early_stage_flag", "commitment_score",
         "premium_risk_flag", "household_stability_flag",
         "fiber_zero_engagement_flag", "high_charge_early_stage_flag", "vulnerable_customer_flag",
+        "AvgMonthlyCharge", "num_services", "Contract"
     ]
     print("\nOutput Details:")
     print(f"  Rows    : {df_engineered.shape[0]}")

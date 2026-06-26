@@ -1,0 +1,8 @@
+{
+    "model.pkl": "27ae0a4d32254544ed8324abf88d785db12f5e4b880d3f3f92d58a2b0a9b94ff",
+    "pipeline.pkl": "7422bf6b4beb8578193b1df08373561e0f6d298928e9d557bc650ad7090aac8d",
+    "encoders.pkl": "04fc27e8762dd6971c4bbc304d470c5219f3841ecd279f0737c0a83b14fdf1a4",
+    "model_metadata.pkl": "b22af04c037c576d4932c1f149816180ce03facf3a9a05f2eb8b17b4bc073adf",
+    "kmeans_model.pkl": "11534f5d459028f129e5720287f763c7faf3bf910a2bb1be8247b3d1b4ae126e",
+    "autoencoder_model.pkl": "a4c65d87dadfdf40f21a2cc4ba12026ab8106a0ed6420f8b261be5f8a733039a"
+}

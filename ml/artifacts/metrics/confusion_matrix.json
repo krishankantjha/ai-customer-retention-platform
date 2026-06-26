@@ -1,0 +1,8 @@
+{
+    "decision_threshold": 0.15,
+    "True_Negatives": 616,
+    "False_Positives": 419,
+    "False_Negatives": 38,
+    "True_Positives": 336,
+    "Total_Samples": 1409
+}

@@ -1,0 +1,14 @@
+{
+    "Uncalibrated": {
+        "Brier_Score": 0.14301556507232402,
+        "ECE": 0.0549990143005606
+    },
+    "Platt_Scaling_Sigmoid": {
+        "Brier_Score": 0.13980881010090662,
+        "ECE": 0.04678473767287093
+    },
+    "Isotonic_Regression": {
+        "Brier_Score": 0.14009335648843949,
+        "ECE": 0.043591153282458016
+    }
+}

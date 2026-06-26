@@ -7,16 +7,21 @@ and computes SHAP values for model explainability.
 """
 
 import os
+import sys
 import pickle
 import logging
 import pandas as pd
-import numpy as np
+
+# Add project root to path to load configs
+base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+if base_dir not in sys.path:
+    sys.path.insert(0, base_dir)
+from configs.dataset_config import config_loader
 
 # Set matplotlib backend to non-interactive 'Agg' to prevent blocking GUI windows
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 from sklearn.metrics import (
     classification_report,
@@ -59,9 +64,10 @@ def evaluate_model(test_features_path: str, artifacts_dir: str) -> None:
     if not os.path.exists(test_features_path):
         raise FileNotFoundError(f"Test features CSV not found: {test_features_path}")
 
+    target_col = config_loader.feature.get("target_column", "Churn")
     test_df = pd.read_csv(test_features_path)
-    y_test = test_df["Churn"]
-    X_test = test_df.drop(columns=["Churn"])
+    y_test = test_df[target_col]
+    X_test = test_df.drop(columns=[target_col])
 
     # Align columns to match the features used in training
     X_test_aligned = X_test[metadata["feature_names_in"]]
@@ -152,8 +158,10 @@ if __name__ == "__main__":
                         format="%(asctime)s | %(levelname)s | %(message)s")
 
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-    test_csv = os.path.join(base_dir, "data", "processed", "test_features.csv")
-    artifacts = os.path.join(base_dir, "ml", "artifacts")
+    config_test_path = config_loader.training["data_paths"]["test_features"]
+    config_artifacts_dir = config_loader.training["data_paths"]["artifacts_dir"]
+    test_csv = config_test_path if os.path.isabs(config_test_path) else os.path.join(base_dir, config_test_path)
+    artifacts = config_artifacts_dir if os.path.isabs(config_artifacts_dir) else os.path.join(base_dir, config_artifacts_dir)
 
     try:
         evaluate_model(test_csv, artifacts)

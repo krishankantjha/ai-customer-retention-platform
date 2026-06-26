@@ -1,42 +1,27 @@
 import os
+import sys
 import logging
 import logging.config
 import yaml
 import pandas as pd
 
+# Add the project root to the python path to support importing configs
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+from configs.dataset_config import config_loader
+from ml.preprocessing.loader import DataLoader
+from ml.preprocessing.validator import DataValidator
+
 def load_raw_data(path, logger):
-    """Load raw telecom churn dataset from CSV."""
-    logger.info(f"Loading raw data from: {path}")
-    if not os.path.exists(path):
-        logger.error(f"Raw data file not found at {path}")
-        raise FileNotFoundError(f"Raw data file not found at {path}")
-    try:
-        df = pd.read_csv(path)
-    except Exception as e:
-        logger.error(f"Error reading CSV file at {path}: {e}")
-        raise
-    logger.info(f"Raw dataset loaded: {df.shape[0]} rows, {df.shape[1]} columns")
-    return df
+    """Load raw telecom churn dataset from CSV utilizing canonical DataLoader."""
+    loader = DataLoader(logger)
+    return loader.load_from_csv(path)
 
 def validate_schema(df, logger):
-    """Validate that all 21 expected columns are present with expected names."""
-    logger.info("Validating schema — expecting 21 columns...")
-    expected_cols = [
-        "customerID", "gender", "SeniorCitizen", "Partner", "Dependents",
-        "tenure", "PhoneService", "MultipleLines", "InternetService",
-        "OnlineSecurity", "OnlineBackup", "DeviceProtection", "TechSupport",
-        "StreamingTV", "StreamingMovies", "Contract", "PaperlessBilling",
-        "PaymentMethod", "MonthlyCharges", "TotalCharges", "Churn"
-    ]
-    
-    if len(df.columns) != 21:
-        raise ValueError(f"Schema Validation Error: Expected 21 columns, got {len(df.columns)}")
-        
-    for col in expected_cols:
-        if col not in df.columns:
-            raise ValueError(f"Schema Validation Error: Expected column '{col}' is missing")
-            
-    logger.info("Schema validation passed: all 21 expected columns present")
+    """Validate that all expected columns are present utilizing canonical DataValidator."""
+    validator = DataValidator(logger)
+    validator.validate_schema(df, strict=True)
 
 def fix_whitespace_blanks(df, logger):
     """Scan string columns for whitespace/blank values, stripping spaces and replacing with NA."""
@@ -94,30 +79,17 @@ def drop_duplicates(df, logger):
     return df_clean
 
 def validate_cleaned_data(df, logger):
-    """Verify data types, value bounds, and target distribution after cleaning."""
-    logger.info("Performing post-clean data validation...")
+    """Verify data types, value bounds, and target distribution after cleaning utilizing canonical DataValidator."""
+    validator = DataValidator(logger)
+    validator.validate_data_types(df, strict=True)
+    validator.validate_value_bounds(df, strict=True)
+    validator.validate_categorical_domains(df, strict=True)
     
-    # 1. SeniorCitizen validation (must be 0 or 1 only)
-    senior_citizen_vals = set(df["SeniorCitizen"].unique())
-    if not senior_citizen_vals.issubset({0, 1}):
-        raise ValueError(f"Validation Error: SeniorCitizen has unexpected values {senior_citizen_vals}")
-        
-    # 2. TotalCharges type validation
-    if df["TotalCharges"].dtype != "float64":
-        raise ValueError(f"Validation Error: Expected TotalCharges to be float64, got {df['TotalCharges'].dtype}")
-        
-    # 3. Log target class distribution
+    # Log target class distribution
     churn_counts = df["Churn"].value_counts(dropna=False)
     churn_perc = df["Churn"].value_counts(normalize=True, dropna=False) * 100
     distribution_log = ", ".join([f"{val}: {count} ({perc:.2f}%)" for val, count, perc in zip(churn_counts.index, churn_counts.values, churn_perc.values)])
     logger.info(f"Churn Target Class Distribution: {distribution_log}")
-    
-    # 4. Check negative values for continuous variables
-    for col in ["tenure", "MonthlyCharges", "TotalCharges"]:
-        neg_count = (df[col] < 0).sum()
-        if neg_count > 0:
-            raise ValueError(f"Validation Error: Found {neg_count} negative value(s) in column '{col}'")
-            
     logger.info(f"Post-cleaning validation passed. Shape: {df.shape[0]} rows, {df.shape[1]} columns")
 
 def save_clean_data(df, path, logger):
@@ -138,10 +110,16 @@ def clean_pipeline(raw_path=None, processed_path=None, logger=None):
     logger.info("RetainIQ — Data Cleaning Pipeline START")
     
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    
+    # Load paths from config loader
+    config_raw_path = config_loader.training["data_paths"]["raw_data"]
+    config_clean_path = config_loader.training["data_paths"]["clean_data"]
+    
+    # Resolve relative paths against base_dir (project root)
     if raw_path is None:
-        raw_path = os.path.join(base_dir, "data", "raw", "Telco_Customer_Churn.csv")
+        raw_path = config_raw_path if os.path.isabs(config_raw_path) else os.path.join(base_dir, config_raw_path)
     if processed_path is None:
-        processed_path = os.path.join(base_dir, "data", "processed", "telco_churn_clean.csv")
+        processed_path = config_clean_path if os.path.isabs(config_clean_path) else os.path.join(base_dir, config_clean_path)
         
     try:
         df = load_raw_data(raw_path, logger)

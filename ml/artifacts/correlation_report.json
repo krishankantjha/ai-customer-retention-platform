@@ -1,0 +1,310 @@
+{
+  "correlation_threshold": 0.7,
+  "collinear_pairs_count": 59,
+  "collinear_pairs": [
+    {
+      "feature_1": "categorical__gender_Female",
+      "feature_2": "categorical__gender_Male",
+      "correlation": 1.0
+    },
+    {
+      "feature_1": "categorical__MultipleLines_No phone service",
+      "feature_2": "binary__PhoneService",
+      "correlation": 1.0
+    },
+    {
+      "feature_1": "categorical__InternetService_No",
+      "feature_2": "categorical__OnlineSecurity_No internet service",
+      "correlation": 1.0
+    },
+    {
+      "feature_1": "categorical__InternetService_No",
+      "feature_2": "categorical__OnlineBackup_No internet service",
+      "correlation": 1.0
+    },
+    {
+      "feature_1": "categorical__InternetService_No",
+      "feature_2": "categorical__DeviceProtection_No internet service",
+      "correlation": 1.0
+    },
+    {
+      "feature_1": "categorical__InternetService_No",
+      "feature_2": "categorical__TechSupport_No internet service",
+      "correlation": 1.0
+    },
+    {
+      "feature_1": "categorical__InternetService_No",
+      "feature_2": "categorical__StreamingTV_No internet service",
+      "correlation": 1.0
+    },
+    {
+      "feature_1": "categorical__InternetService_No",
+      "feature_2": "categorical__StreamingMovies_No internet service",
+      "correlation": 1.0
+    },
+    {
+      "feature_1": "categorical__OnlineSecurity_No internet service",
+      "feature_2": "categorical__OnlineBackup_No internet service",
+      "correlation": 1.0
+    },
+    {
+      "feature_1": "categorical__OnlineSecurity_No internet service",
+      "feature_2": "categorical__DeviceProtection_No internet service",
+      "correlation": 1.0
+    },
+    {
+      "feature_1": "categorical__OnlineSecurity_No internet service",
+      "feature_2": "categorical__TechSupport_No internet service",
+      "correlation": 1.0
+    },
+    {
+      "feature_1": "categorical__OnlineSecurity_No internet service",
+      "feature_2": "categorical__StreamingTV_No internet service",
+      "correlation": 1.0
+    },
+    {
+      "feature_1": "categorical__OnlineSecurity_No internet service",
+      "feature_2": "categorical__StreamingMovies_No internet service",
+      "correlation": 1.0
+    },
+    {
+      "feature_1": "categorical__OnlineBackup_No internet service",
+      "feature_2": "categorical__DeviceProtection_No internet service",
+      "correlation": 1.0
+    },
+    {
+      "feature_1": "categorical__OnlineBackup_No internet service",
+      "feature_2": "categorical__TechSupport_No internet service",
+      "correlation": 1.0
+    },
+    {
+      "feature_1": "categorical__OnlineBackup_No internet service",
+      "feature_2": "categorical__StreamingTV_No internet service",
+      "correlation": 1.0
+    },
+    {
+      "feature_1": "categorical__OnlineBackup_No internet service",
+      "feature_2": "categorical__StreamingMovies_No internet service",
+      "correlation": 1.0
+    },
+    {
+      "feature_1": "categorical__DeviceProtection_No internet service",
+      "feature_2": "categorical__TechSupport_No internet service",
+      "correlation": 1.0
+    },
+    {
+      "feature_1": "categorical__DeviceProtection_No internet service",
+      "feature_2": "categorical__StreamingTV_No internet service",
+      "correlation": 1.0
+    },
+    {
+      "feature_1": "categorical__DeviceProtection_No internet service",
+      "feature_2": "categorical__StreamingMovies_No internet service",
+      "correlation": 1.0
+    },
+    {
+      "feature_1": "categorical__TechSupport_No internet service",
+      "feature_2": "categorical__StreamingTV_No internet service",
+      "correlation": 1.0
+    },
+    {
+      "feature_1": "categorical__TechSupport_No internet service",
+      "feature_2": "categorical__StreamingMovies_No internet service",
+      "correlation": 1.0
+    },
+    {
+      "feature_1": "categorical__TechSupport_Yes",
+      "feature_2": "binary__has_support",
+      "correlation": 1.0
+    },
+    {
+      "feature_1": "categorical__StreamingTV_No internet service",
+      "feature_2": "categorical__StreamingMovies_No internet service",
+      "correlation": 1.0
+    },
+    {
+      "feature_1": "numeric__tenure",
+      "feature_2": "ordinal__tenure_bucket",
+      "correlation": 0.9651
+    },
+    {
+      "feature_1": "binary__is_early_stage",
+      "feature_2": "binary__contract_early_stage_flag",
+      "correlation": 0.9615
+    },
+    {
+      "feature_1": "numeric__commitment_score",
+      "feature_2": "binary__contract_is_mtm",
+      "correlation": 0.9567
+    },
+    {
+      "feature_1": "numeric__MonthlyCharges",
+      "feature_2": "numeric__AvgMonthlyCharge",
+      "correlation": 0.9401
+    },
+    {
+      "feature_1": "categorical__InternetService_Fiber optic",
+      "feature_2": "binary__premium_risk_flag",
+      "correlation": 0.9301
+    },
+    {
+      "feature_1": "numeric__Contract",
+      "feature_2": "binary__contract_is_mtm",
+      "correlation": 0.9188
+    },
+    {
+      "feature_1": "numeric__addon_count",
+      "feature_2": "numeric__num_services",
+      "correlation": 0.9132
+    },
+    {
+      "feature_1": "numeric__commitment_score",
+      "feature_2": "numeric__Contract",
+      "correlation": 0.8876
+    },
+    {
+      "feature_1": "binary__Dependents",
+      "feature_2": "binary__household_stability_flag",
+      "correlation": 0.885
+    },
+    {
+      "feature_1": "ordinal__tenure_bucket",
+      "feature_2": "binary__is_early_stage",
+      "correlation": 0.8644
+    },
+    {
+      "feature_1": "numeric__AvgMonthlyCharge",
+      "feature_2": "numeric__num_services",
+      "correlation": 0.8493
+    },
+    {
+      "feature_1": "numeric__MonthlyCharges",
+      "feature_2": "numeric__num_services",
+      "correlation": 0.8374
+    },
+    {
+      "feature_1": "ordinal__tenure_bucket",
+      "feature_2": "binary__contract_early_stage_flag",
+      "correlation": 0.8311
+    },
+    {
+      "feature_1": "categorical__MultipleLines_No",
+      "feature_2": "categorical__MultipleLines_Yes",
+      "correlation": 0.8231
+    },
+    {
+      "feature_1": "numeric__MonthlyCharges",
+      "feature_2": "categorical__InternetService_Fiber optic",
+      "correlation": 0.8069
+    },
+    {
+      "feature_1": "numeric__MonthlyCharges",
+      "feature_2": "binary__premium_risk_flag",
+      "correlation": 0.8026
+    },
+    {
+      "feature_1": "numeric__tenure",
+      "feature_2": "binary__is_early_stage",
+      "correlation": 0.7773
+    },
+    {
+      "feature_1": "numeric__tenure",
+      "feature_2": "numeric__commitment_score",
+      "correlation": 0.7751
+    },
+    {
+      "feature_1": "numeric__commitment_score",
+      "feature_2": "ordinal__tenure_bucket",
+      "correlation": 0.7616
+    },
+    {
+      "feature_1": "numeric__addon_count",
+      "feature_2": "numeric__AvgMonthlyCharge",
+      "correlation": 0.7553
+    },
+    {
+      "feature_1": "numeric__tenure",
+      "feature_2": "binary__contract_early_stage_flag",
+      "correlation": 0.7527
+    },
+    {
+      "feature_1": "numeric__AvgMonthlyCharge",
+      "feature_2": "binary__premium_risk_flag",
+      "correlation": 0.7312
+    },
+    {
+      "feature_1": "numeric__num_services",
+      "feature_2": "categorical__StreamingTV_Yes",
+      "correlation": 0.7299
+    },
+    {
+      "feature_1": "numeric__MonthlyCharges",
+      "feature_2": "categorical__InternetService_No",
+      "correlation": 0.7281
+    },
+    {
+      "feature_1": "numeric__MonthlyCharges",
+      "feature_2": "categorical__OnlineSecurity_No internet service",
+      "correlation": 0.7281
+    },
+    {
+      "feature_1": "numeric__MonthlyCharges",
+      "feature_2": "categorical__OnlineBackup_No internet service",
+      "correlation": 0.7281
+    },
+    {
+      "feature_1": "numeric__MonthlyCharges",
+      "feature_2": "categorical__DeviceProtection_No internet service",
+      "correlation": 0.7281
+    },
+    {
+      "feature_1": "numeric__MonthlyCharges",
+      "feature_2": "categorical__TechSupport_No internet service",
+      "correlation": 0.7281
+    },
+    {
+      "feature_1": "numeric__MonthlyCharges",
+      "feature_2": "categorical__StreamingTV_No internet service",
+      "correlation": 0.7281
+    },
+    {
+      "feature_1": "numeric__MonthlyCharges",
+      "feature_2": "categorical__StreamingMovies_No internet service",
+      "correlation": 0.7281
+    },
+    {
+      "feature_1": "numeric__num_services",
+      "feature_2": "categorical__StreamingMovies_Yes",
+      "correlation": 0.7253
+    },
+    {
+      "feature_1": "categorical__StreamingMovies_No",
+      "feature_2": "categorical__StreamingMovies_Yes",
+      "correlation": 0.7099
+    },
+    {
+      "feature_1": "numeric__commitment_score",
+      "feature_2": "binary__contract_early_stage_flag",
+      "correlation": 0.7097
+    },
+    {
+      "feature_1": "categorical__StreamingTV_No",
+      "feature_2": "categorical__StreamingTV_Yes",
+      "correlation": 0.7088
+    },
+    {
+      "feature_1": "categorical__InternetService_DSL",
+      "feature_2": "categorical__InternetService_Fiber optic",
+      "correlation": 0.7
+    }
+  ],
+  "engineered_warnings": [
+    "High collinearity between AvgMonthlyCharge and MonthlyCharges (0.9401). For future Logistic Regression models, consider dropping AvgMonthlyCharge to prevent parameter inflation.",
+    "High collinearity between num_services and addon_count (0.9132). For future Logistic Regression models, consider dropping num_services to reduce multicollinearity."
+  ],
+  "recommendations": [
+    "Tree-based models (XGBoost, Random Forest, LightGBM) are highly robust to multicollinearity. No feature removal is required for the champion model.",
+    "For future Logistic Regression benchmarking, multicollinearity can cause unstable coefficient estimates and high VIF.",
+    "If building a linear benchmark model, drop one feature from each highly correlated pair or enable strong L1 (Lasso) or L2 (Ridge) regularization."
+  ]
+}

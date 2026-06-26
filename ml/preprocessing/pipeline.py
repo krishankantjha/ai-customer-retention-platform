@@ -6,43 +6,48 @@ applies the feature engineering from engineer.py, fits the preprocessing encoder
 and serializes the artifacts for training and inference.
 """
 
+import sys
+import os
 import logging
 import logging.config
-import os
 import pickle
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler, OneHotEncoder, OrdinalEncoder
 from sklearn.compose import ColumnTransformer
+
+# Add the project root to the python path to support importing from the ml package directly
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
 from ml.preprocessing.engineer import engineer_features
+from configs.dataset_config import config_loader
+from ml.preprocessing.loader import DataLoader
+from ml.preprocessing.validator import DataValidator
+from ml.preprocessing.encoding import get_categorical_encoder, get_ordinal_encoder
+from ml.preprocessing.scaling import get_numeric_scaler
+from ml.preprocessing.imbalance import resample_training_data
+
 
 logger = logging.getLogger("ml.preprocessing.pipeline")
 
-# Column groups for the ColumnTransformer
-NUMERIC_COLS = ["tenure", "MonthlyCharges", "addon_count", "commitment_score"]
+# Dynamically construct Column groups from config loader
+_feature_cfg = config_loader.feature
+
+TARGET_COL = _feature_cfg.get("target_column", "Churn")
+
+# Categorical columns are loaded directly, excluding Contract as it is ordinally mapped to integer values
+CATEGORICAL_COLS = [col for col in _feature_cfg.get("categorical_columns", []) if col != "Contract"]
+
+# Numeric columns are loaded from config (excluding TotalCharges as it's dropped) and adding engineered numeric columns
+NUMERIC_COLS = [col for col in _feature_cfg.get("numeric_columns", []) if col != "TotalCharges"] + ["addon_count", "commitment_score", "Contract", "AvgMonthlyCharge", "num_services"]
+
+# Ordinal columns
 ORDINAL_COLS = ["tenure_bucket"]
 ORDINAL_CATEGORIES = [["0-12", "12-24", "24-48", "48+"]]
 
-CATEGORICAL_COLS = [
-    "gender",
-    "MultipleLines",
-    "InternetService",
-    "OnlineSecurity",
-    "OnlineBackup",
-    "DeviceProtection",
-    "TechSupport",
-    "StreamingTV",
-    "StreamingMovies",
-    "Contract",
-    "PaymentMethod",
-]
-
-BINARY_COLS = [
-    "SeniorCitizen",
-    "Partner",
-    "Dependents",
-    "PhoneService",
-    "PaperlessBilling",
+# Binary columns are loaded from config and adding engineered binary columns
+_config_binary = list(_feature_cfg.get("binary_columns", []))
+_engineered_binary = [
     "contract_is_mtm",
     "is_early_stage",
     "auto_pay_flag",
@@ -53,8 +58,9 @@ BINARY_COLS = [
     "security_over_streaming",
     "fiber_zero_engagement_flag",
     "high_charge_early_stage_flag",
-    "vulnerable_customer_flag",
+    "vulnerable_customer_flag"
 ]
+BINARY_COLS = _config_binary + _engineered_binary
 
 
 def run_pipeline(clean_csv_path: str, artifacts_dir: str, processed_dir: str) -> None:
@@ -69,25 +75,22 @@ def run_pipeline(clean_csv_path: str, artifacts_dir: str, processed_dir: str) ->
     os.makedirs(artifacts_dir, exist_ok=True)
     os.makedirs(processed_dir, exist_ok=True)
 
-    # Load clean data
-    if not os.path.exists(clean_csv_path):
-        raise FileNotFoundError(f"Clean CSV file not found at: {clean_csv_path}")
-    
-    df = pd.read_csv(clean_csv_path)
-    logger.info(f"Loaded clean dataset: {df.shape[0]} rows, {df.shape[1]} columns")
+    # Load clean data utilizing canonical DataLoader
+    loader = DataLoader(logger)
+    df = loader.load_from_csv(clean_csv_path)
 
-    # Separate features and target
-    if "Churn" not in df.columns:
-        raise ValueError("Target column 'Churn' not found in clean dataset")
+    # Validate schema utilizing canonical DataValidator
+    validator = DataValidator(logger)
+    validator.validate_schema(df, strict=True)
 
-    X = df.drop(columns=["Churn"])
-    y = df["Churn"]
+    X = df.drop(columns=[TARGET_COL])
+    y = df[TARGET_COL]
 
     # Stratified split to preserve target class distribution
     X_train, X_test, y_train, y_test = train_test_split(
         X, y,
         test_size=0.20,
-        random_state=42,
+        random_state=config_loader.model.get("random_seed", 42),
         stratify=y
     )
     logger.info(f"Split data into Train: {X_train.shape[0]} rows, Test: {X_test.shape[0]} rows")
@@ -97,22 +100,24 @@ def run_pipeline(clean_csv_path: str, artifacts_dir: str, processed_dir: str) ->
     logger.info(f"Calculated training MonthlyCharges median: {train_monthly_charges_median:.2f}")
 
     # Apply feature engineering to both splits using the training median
-    train_full = X_train.assign(Churn=y_train.values)
-    test_full = X_test.assign(Churn=y_test.values)
+    train_kwargs = {TARGET_COL: y_train.values}
+    test_kwargs = {TARGET_COL: y_test.values}
+    train_full = X_train.assign(**train_kwargs)
+    test_full = X_test.assign(**test_kwargs)
 
     train_engineered = engineer_features(train_full, train_monthly_charges_median)
     test_engineered = engineer_features(test_full, train_monthly_charges_median)
 
     # Separate target from features again
-    y_train_final = train_engineered.pop("Churn")
-    y_test_final = test_engineered.pop("Churn")
+    y_train_final = train_engineered.pop(TARGET_COL)
+    y_test_final = test_engineered.pop(TARGET_COL)
 
-    # Set up the preprocessing transformations
+    # Set up the preprocessing transformations using modular getters
     preprocessor = ColumnTransformer(
         transformers=[
-            ("numeric", StandardScaler(), NUMERIC_COLS),
-            ("ordinal", OrdinalEncoder(categories=ORDINAL_CATEGORIES, handle_unknown="use_encoded_value", unknown_value=-1), ORDINAL_COLS),
-            ("categorical", OneHotEncoder(handle_unknown="ignore", sparse_output=False), CATEGORICAL_COLS),
+            ("numeric", get_numeric_scaler(), NUMERIC_COLS),
+            ("ordinal", get_ordinal_encoder(categories=ORDINAL_CATEGORIES), ORDINAL_COLS),
+            ("categorical", get_categorical_encoder(), CATEGORICAL_COLS),
             ("binary", "passthrough", BINARY_COLS),
         ],
         remainder="drop"
@@ -130,11 +135,23 @@ def run_pipeline(clean_csv_path: str, artifacts_dir: str, processed_dir: str) ->
     feature_names = preprocessor.get_feature_names_out()
 
     # Reconstruct processed DataFrames
-    train_df = pd.DataFrame(X_train_transformed, columns=feature_names)
-    train_df["Churn"] = y_train_final.values
+    train_df_raw = pd.DataFrame(X_train_transformed, columns=feature_names)
+    train_df_raw[TARGET_COL] = y_train_final.values
+
+    # Apply SMOTE oversampling to training dataset to balance target classes (no leakage risk, test split left untouched)
+    X_train_resampled, y_train_resampled = resample_training_data(
+        train_df_raw.drop(columns=[TARGET_COL]),
+        train_df_raw[TARGET_COL],
+        random_seed=config_loader.model.get("random_seed", 42),
+        default_k_neighbors=config_loader.model.get("smote", {}).get("k_neighbors", 5)
+    )
+    
+    # Reassign balanced training set
+    train_df = X_train_resampled.copy()
+    train_df[TARGET_COL] = y_train_resampled.values
 
     test_df = pd.DataFrame(X_test_transformed, columns=feature_names)
-    test_df["Churn"] = y_test_final.values
+    test_df[TARGET_COL] = y_test_final.values
 
     # Save processed DataFrames to disk
     train_csv_path = os.path.join(processed_dir, "train_features.csv")
@@ -167,6 +184,15 @@ def run_pipeline(clean_csv_path: str, artifacts_dir: str, processed_dir: str) ->
     with open(encoders_path, "wb") as f:
         pickle.dump(encoders_meta, f)
     logger.info(f"Saved encoder metadata to: {encoders_path}")
+
+    # Run collinearity and correlation review report for future linear model benchmarking
+    try:
+        from ml.preprocessing.correlation_review import run_correlation_review
+        report_path = os.path.join(artifacts_dir, "correlation_report.json")
+        run_correlation_review(train_csv_path, report_path)
+    except Exception as e:
+        logger.warning(f"Failed to run correlation review: {e}")
+
 
 
 def load_pipeline(artifacts_dir: str) -> tuple:
@@ -202,9 +228,15 @@ if __name__ == "__main__":
         logging.basicConfig(level=logging.INFO,
                             format="%(asctime)s | %(levelname)s | %(message)s")
 
-    clean_csv = os.path.join(base_dir, "data", "processed", "telco_churn_clean.csv")
-    artifacts = os.path.join(base_dir, "ml", "artifacts")
-    processed = os.path.join(base_dir, "data", "processed")
+    # Load paths from config loader
+    config_clean_path = config_loader.training["data_paths"]["clean_data"]
+    config_artifacts_dir = config_loader.training["data_paths"]["artifacts_dir"]
+    config_processed_dir = config_loader.training["data_paths"]["processed_dir"]
+
+    # Resolve paths relative to base_dir
+    clean_csv = config_clean_path if os.path.isabs(config_clean_path) else os.path.join(base_dir, config_clean_path)
+    artifacts = config_artifacts_dir if os.path.isabs(config_artifacts_dir) else os.path.join(base_dir, config_artifacts_dir)
+    processed = config_processed_dir if os.path.isabs(config_processed_dir) else os.path.join(base_dir, config_processed_dir)
 
     try:
         run_pipeline(clean_csv, artifacts, processed)
