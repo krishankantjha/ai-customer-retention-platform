@@ -39,6 +39,6 @@ USER appuser
 # Expose backend port
 EXPOSE 8000
 
-# Start Uvicorn server
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Start migrations and Uvicorn server
+CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
 
