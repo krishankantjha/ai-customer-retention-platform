@@ -57,21 +57,18 @@ def render_explainability_view(
                     <b>Month-to-month contracts</b> are the strongest predictor of churn. Customers on month-to-month contracts have high SHAP contributions towards churn. Transitioning customers to 1-year or 2-year contracts drastically shifts their SHAP score to stable/retained territory.
                 </p>
             </div>
-            
             <div style="background: rgba(15, 23, 42, 0.45); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 1.5rem; backdrop-filter: blur(20px);">
                 <div style="font-weight: 700; color: {primary_color_hex}; font-size: 1.1rem; margin-bottom: 0.5rem;">⏱️ Customer Tenure</div>
                 <p style="color: #cbd5e1; font-size: 0.9rem; margin: 0; line-height: 1.5;">
                     <b>Low tenure (first 3-6 months)</b> carries high churn risk. As tenure increases, SHAP contribution decreases, representing natural customer stabilization. First-month welcoming programs and quick tech support onboarding are critical.
                 </p>
             </div>
-            
             <div style="background: rgba(15, 23, 42, 0.45); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 1.5rem; backdrop-filter: blur(20px);">
                 <div style="font-weight: 700; color: {primary_color_hex}; font-size: 1.1rem; margin-bottom: 0.5rem;">💸 Monthly Billing Charges</div>
                 <p style="color: #cbd5e1; font-size: 0.9rem; margin: 0; line-height: 1.5;">
                     Customers with <b>extremely high monthly charges</b> without bundled ecosystem subscriptions are highly sensitive. They perceive lower value for their spend, leading the model to flag high price risk. Price auditing or loyalty discounts are suggested.
                 </p>
             </div>
-            
             <div style="background: rgba(15, 23, 42, 0.45); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 1.5rem; backdrop-filter: blur(20px);">
                 <div style="font-weight: 700; color: {primary_color_hex}; font-size: 1.1rem; margin-bottom: 0.5rem;">🛡️ Technical Ecosystem Lock-in</div>
                 <p style="color: #cbd5e1; font-size: 0.9rem; margin: 0; line-height: 1.5;">
