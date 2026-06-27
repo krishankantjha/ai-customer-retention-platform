@@ -251,7 +251,18 @@ def render_auth_view(api_client: RetainIQAPIClient, primary_color_hex: str, seco
         }}
         div[data-testid="stForm"] div[data-testid="stHorizontalBlock"] {{
             align-items: center !important;
-            margin-bottom: -10px !important;
+            margin-top: -16px !important;
+            margin-bottom: -12px !important;
+        }}
+        
+        /* Shift the second column (Forgot Password link) up to line up with the checkbox text baseline */
+        div[data-testid="stForm"] div[data-testid="stHorizontalBlock"] div[data-testid="column"]:nth-of-type(2) {{
+            margin-top: -6px !important;
+        }}
+        
+        /* Pull submit buttons up closer to the checkbox row */
+        div[data-testid="stFormSubmitButton"] {{
+            margin-top: -10px !important;
         }}
     </style>""".replace("\n", " "), unsafe_allow_html=True)
     
@@ -368,7 +379,7 @@ def render_auth_view(api_client: RetainIQAPIClient, primary_color_hex: str, seco
                 with c_chk:
                     remember_me = st.checkbox("Remember Me", value=True, key="login_remember")
                 with c_lnk:
-                    st.markdown("<div style='text-align: right; font-family: Inter, sans-serif; font-size: 0.85rem; margin-top: -14px;'><a href='#' style='color: #6366f1; text-decoration: none; font-weight: 500;'>Forgot Password?</a></div>", unsafe_allow_html=True)
+                    st.markdown("<div style='text-align: right; font-family: Inter, sans-serif; font-size: 0.85rem; margin-top: 0px;'><a href='#' style='color: #6366f1; text-decoration: none; font-weight: 500;'>Forgot Password?</a></div>", unsafe_allow_html=True)
                 
                 submitted = st.form_submit_button("Login to Dashboard   →", use_container_width=True)
                 
