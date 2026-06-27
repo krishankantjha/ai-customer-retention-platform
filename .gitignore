@@ -22,4 +22,9 @@ __pycache__/
 Thumbs.db
 
 # Processed Data CSVs
-data/processed/*.csv
+data/processed/*.csv
+
+# Local Databases
+*.db
+*.sqlite
+

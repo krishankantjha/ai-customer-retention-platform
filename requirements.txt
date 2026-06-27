@@ -145,11 +145,11 @@ pyasn1_modules==0.4.2
 pycparser==3.0
 pydantic==2.7.4
 pydantic-settings==2.3.3
-pydantic_core==2.46.4
+pydantic_core==2.18.4
 Pygments==2.20.0
 pyparsing==3.3.2
 pytest==8.2.2
-pytest-asyncio==1.4.0
+pytest-asyncio>=0.21.0,<0.24.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.2.2
 python-jose==3.3.0
@@ -175,7 +175,7 @@ scipy==1.17.1
 seaborn==0.13.2
 Send2Trash==2.1.0
 sentry-sdk==2.60.0
-shap==0.51.0
+shap==0.45.1
 six==1.17.0
 skops==0.14.0
 slicer==0.0.8
@@ -184,7 +184,7 @@ soupsieve==2.8.4
 SQLAlchemy==2.0.30
 sqlparse==0.5.5
 stack-data==0.6.3
-starlette==0.52.1
+starlette>=0.37.2,<0.38.0
 terminado==0.18.1
 threadpoolctl==3.6.0
 tifffile==2026.3.3
