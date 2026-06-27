@@ -139,6 +139,19 @@ class RetainIQAPIClient:
         except Exception:
             return 500, []
 
+    def simulate_intervention(self, customer_data: dict):
+        """Sends modified customer demographics/services to the backend to get a live simulated churn score."""
+        try:
+            response = requests.post(
+                f"{self.base_url}/api/v1/predict/simulate",
+                headers=self.get_headers(),
+                json=customer_data,
+                timeout=10
+            )
+            return response.status_code, response.json()
+        except Exception as e:
+            return 500, {"detail": f"Failed to run simulation: {str(e)}"}
+
     def get_health(self):
         """Calls database validation health checks on backend service."""
         try:

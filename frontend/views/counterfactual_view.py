@@ -1,10 +1,6 @@
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
-from backend.app.database.session import SessionLocal
-from backend.app.database.models.customer import Customer
-from backend.app.services.prediction_service import load_artifacts
-from ml.explainability.shap_local import LocalExplainer
 from frontend.api_client import RetainIQAPIClient
 
 def render_counterfactual_view(
@@ -52,15 +48,9 @@ def render_counterfactual_view(
         st.info("Enter a Customer ID in the field above to start the simulator.")
         st.stop()
 
-    # Load customer data from database and explanation from API
+    # Load explanation details and features from API
     with st.spinner("Initializing simulator environment..."):
-        db = SessionLocal()
         try:
-            customer = db.query(Customer).filter(Customer.customer_id == selected_id).first()
-            if not customer:
-                st.warning(f"No records found matching Customer ID: `{selected_id}`")
-                st.stop()
-            
             # Query customer explanation using the cached callback (15s TTL)
             status_code, explain_data = get_explanation_callback(st.session_state.jwt_token, selected_id)
             check_401_callback(status_code)
@@ -68,21 +58,37 @@ def render_counterfactual_view(
             if status_code != 200:
                 st.error("Failed to load customer analytical explanation from the backend.")
                 st.stop()
-
-            # Load model artifacts for local simulation
-            try:
-                model_obj, preprocessor_obj, encoders_meta, metadata, explainer_obj, _ = load_artifacts()
-                local_explainer = LocalExplainer(
-                    model_obj,
-                    metadata["feature_names_in"],
-                    explainer=explainer_obj,
-                    preprocessor=preprocessor_obj,
-                    encoders=encoders_meta,
-                    metadata=metadata,
-                )
-            except Exception as e:
-                st.error(f"Error loading prediction models: {e}")
-                st.stop()
+            
+            # Extract customer features dynamically from the API response
+            from types import SimpleNamespace
+            features_dict = explain_data.get("customer_features") or {}
+            
+            customer = SimpleNamespace(
+                customer_id=features_dict.get("customerID") or features_dict.get("customer_id") or selected_id,
+                gender=features_dict.get("gender") or "Male",
+                senior_citizen=features_dict.get("SeniorCitizen") or features_dict.get("senior_citizen") or 0,
+                partner=features_dict.get("Partner") or features_dict.get("partner") or "No",
+                dependents=features_dict.get("Dependents") or features_dict.get("dependents") or "No",
+                tenure=features_dict.get("tenure") or 0,
+                phone_service=features_dict.get("PhoneService") or features_dict.get("phone_service") or "Yes",
+                multiple_lines=features_dict.get("MultipleLines") or features_dict.get("multiple_lines") or "No",
+                internet_service=features_dict.get("InternetService") or features_dict.get("internet_service") or "No",
+                online_security=features_dict.get("OnlineSecurity") or features_dict.get("online_security") or "No",
+                online_backup=features_dict.get("OnlineBackup") or features_dict.get("online_backup") or "No",
+                device_protection=features_dict.get("DeviceProtection") or features_dict.get("device_protection") or "No",
+                tech_support=features_dict.get("TechSupport") or features_dict.get("tech_support") or "No",
+                streaming_tv=features_dict.get("StreamingTV") or features_dict.get("streaming_tv") or "No",
+                streaming_movies=features_dict.get("StreamingMovies") or features_dict.get("streaming_movies") or "No",
+                contract=features_dict.get("Contract") or features_dict.get("contract") or "Month-to-month",
+                paperless_billing=features_dict.get("PaperlessBilling") or features_dict.get("paperless_billing") or "No",
+                payment_method=features_dict.get("PaymentMethod") or features_dict.get("payment_method") or "Mailed check",
+                monthly_charges=features_dict.get("MonthlyCharges") or features_dict.get("monthly_charges") or 0.0,
+                total_charges=features_dict.get("TotalCharges") or features_dict.get("total_charges") or 0.0,
+                churn=features_dict.get("Churn") or features_dict.get("churn") or "No"
+            )
+        except Exception as e:
+            st.error(f"Error loading prediction data: {e}")
+            st.stop()
 
             st.markdown("<br>", unsafe_allow_html=True)
             
@@ -205,33 +211,14 @@ def render_counterfactual_view(
             with col_result:
                 st.markdown("### Simulation Result")
                 
-                # Execute simulation
-                customer_dict = {
-                    "customerID": customer.customer_id,
-                    "gender": customer.gender,
-                    "SeniorCitizen": customer.senior_citizen,
-                    "Partner": customer.partner,
-                    "Dependents": customer.dependents,
-                    "tenure": sim_tenure,
-                    "PhoneService": customer.phone_service,
-                    "MultipleLines": customer.multiple_lines,
-                    "InternetService": customer.internet_service,
-                    "OnlineSecurity": sim_security,
-                    "OnlineBackup": customer.online_backup,
-                    "DeviceProtection": customer.device_protection,
-                    "TechSupport": sim_support,
-                    "StreamingTV": customer.streaming_tv,
-                    "StreamingMovies": customer.streaming_movies,
-                    "Contract": sim_contract,
-                    "PaperlessBilling": sim_billing,
-                    "PaymentMethod": sim_payment,
-                    "MonthlyCharges": sim_charges,
-                    "TotalCharges": sim_charges * sim_tenure,
-                    "Churn": customer.churn
-                }
-                customer_df = pd.DataFrame([customer_dict])
+                # Execute simulation over API client
+                status, res = api_client.simulate_intervention(customer_dict)
+                if status == 200:
+                    sim_prob = res["simulated_probability"]
+                else:
+                    st.error(f"Failed to calculate simulation on backend: {res.get('detail')}")
+                    sim_prob = orig_prob
                 
-                sim_prob = local_explainer.simulate_intervention(customer_df, {})
                 risk_reduction = orig_prob - sim_prob
                 annual_saved_revenue = max(0.0, risk_reduction) * sim_charges * 12
                 
@@ -287,8 +274,5 @@ def render_counterfactual_view(
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
-
         except Exception as e:
             st.error(f"Internal error executing simulator: {e}")
-        finally:
-            db.close()

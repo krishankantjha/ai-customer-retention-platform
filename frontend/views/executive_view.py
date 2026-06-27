@@ -4,9 +4,6 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 from frontend.utils import get_risk_cat
-from backend.app.database.session import SessionLocal
-from backend.app.database.models.customer import Customer
-from backend.app.database.models.prediction import Prediction
 
 def render_executive_view(
     cohort_data: list,
@@ -139,41 +136,32 @@ def render_executive_view(
         st.markdown("### Payment Method Analysis")
         st.write("Understand how monthly billing methods map to customer churn risk concentration.")
         
-        # Load payment details dynamically from database
-        db = SessionLocal()
-        try:
-            db_res = db.query(Customer.payment_method, Prediction.churn_probability)\
-                .join(Prediction, Customer.id == Prediction.customer_id).all()
+        # Use existing cohort DataFrame instead of direct database access
+        if not df.empty and "payment_method" in df.columns:
+            pay_df = df[["payment_method", "churn_probability"]].copy()
+            pay_df["risk_category"] = pay_df["churn_probability"].apply(get_risk_cat)
             
-            if db_res:
-                pay_df = pd.DataFrame(db_res, columns=["payment_method", "churn_probability"])
-                pay_df["risk_category"] = pay_df["churn_probability"].apply(get_risk_cat)
-                
-                fig_pay = px.histogram(
-                    pay_df,
-                    x="payment_method",
-                    color="risk_category",
-                    barmode="group",
-                    category_orders={"risk_category": ["Low Risk", "Medium Risk", "High Risk"]},
-                    color_discrete_map={"High Risk": danger_color_hex, "Medium Risk": secondary_color_hex, "Low Risk": "#10b981"},
-                    labels={"payment_method": "Billing Method", "count": "Customer Count"},
-                )
-                fig_pay.update_layout(
-                    template="plotly_dark",
-                    paper_bgcolor="rgba(0,0,0,0)",
-                    plot_bgcolor="rgba(0,0,0,0)",
-                    font=dict(family="Inter, sans-serif", color="#94a3b8"),
-                    margin=dict(t=10, b=20, l=20, r=20),
-                    height=300,
-                    legend_title_text="Risk Level"
-                )
-                st.plotly_chart(fig_pay, use_container_width=True)
-            else:
-                st.info("No payment details found.")
-        except Exception as e:
-            st.error(f"Error querying payment details: {e}")
-        finally:
-            db.close()
+            fig_pay = px.histogram(
+                pay_df,
+                x="payment_method",
+                color="risk_category",
+                barmode="group",
+                category_orders={"risk_category": ["Low Risk", "Medium Risk", "High Risk"]},
+                color_discrete_map={"High Risk": danger_color_hex, "Medium Risk": secondary_color_hex, "Low Risk": "#10b981"},
+                labels={"payment_method": "Billing Method", "count": "Customer Count"},
+            )
+            fig_pay.update_layout(
+                template="plotly_dark",
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                font=dict(family="Inter, sans-serif", color="#94a3b8"),
+                margin=dict(t=10, b=20, l=20, r=20),
+                height=300,
+                legend_title_text="Risk Level"
+            )
+            st.plotly_chart(fig_pay, use_container_width=True)
+        else:
+            st.info("No payment details found.")
 
     with t_tenure:
         st.markdown("### Tenure vs. Churn Probability")

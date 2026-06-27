@@ -216,8 +216,67 @@ def get_customer_explain(
             "persona": persona_name
         } if prediction.cluster is not None else None,
         simulations=simulations,
+        customer_features=customer_dict if 'customer_dict' in locals() else None,
         predicted_at=prediction.predicted_at
     )
+
+
+@router.post("/predict/simulate")
+def simulate_prediction(
+    request: dict,
+    db: Session = Depends(get_db),
+    current_user: str = Depends(get_current_user)
+):
+    """
+    Run a single live counterfactual simulation for edited customer inputs.
+    """
+    from app.services.prediction_service import load_artifacts
+    from ml.explainability.shap_local import LocalExplainer
+
+    try:
+        model_obj, preprocessor_obj, encoders_meta, metadata, explainer_obj, _ = load_artifacts()
+        local_explainer = LocalExplainer(
+            model_obj,
+            metadata["feature_names_in"],
+            explainer=explainer_obj,
+            preprocessor=preprocessor_obj,
+            encoders=encoders_meta,
+            metadata=metadata,
+        )
+
+        customer_dict = {
+            "customerID": request.get("customerID") or request.get("customer_id") or "SIM",
+            "gender": request.get("gender") or "Male",
+            "SeniorCitizen": int(request.get("SeniorCitizen") or request.get("senior_citizen") or 0),
+            "Partner": request.get("Partner") or request.get("partner") or "No",
+            "Dependents": request.get("Dependents") or request.get("dependents") or "No",
+            "tenure": int(request.get("tenure") or 0),
+            "PhoneService": request.get("PhoneService") or request.get("phone_service") or "Yes",
+            "MultipleLines": request.get("MultipleLines") or request.get("multiple_lines") or "No",
+            "InternetService": request.get("InternetService") or request.get("internet_service") or "No",
+            "OnlineSecurity": request.get("OnlineSecurity") or request.get("online_security") or "No",
+            "OnlineBackup": request.get("OnlineBackup") or request.get("online_backup") or "No",
+            "DeviceProtection": request.get("DeviceProtection") or request.get("device_protection") or "No",
+            "TechSupport": request.get("TechSupport") or request.get("tech_support") or "No",
+            "StreamingTV": request.get("StreamingTV") or request.get("streaming_tv") or "No",
+            "StreamingMovies": request.get("StreamingMovies") or request.get("streaming_movies") or "No",
+            "Contract": request.get("Contract") or request.get("contract") or "Month-to-month",
+            "PaperlessBilling": request.get("PaperlessBilling") or request.get("paperless_billing") or "No",
+            "PaymentMethod": request.get("PaymentMethod") or request.get("payment_method") or "Mailed check",
+            "MonthlyCharges": float(request.get("MonthlyCharges") or request.get("monthly_charges") or 0.0),
+            "TotalCharges": float(request.get("TotalCharges") or request.get("total_charges") or 0.0),
+            "Churn": request.get("Churn") or request.get("churn") or "No"
+        }
+
+        customer_df = pd.DataFrame([customer_dict])
+        sim_prob = local_explainer.simulate_intervention(customer_df, {})
+        return {"simulated_probability": sim_prob}
+    except Exception as e:
+        logger.error(f"Failed live counterfactual simulation prediction: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Simulation error: {str(e)}"
+        )
 
 
 @router.get("/uploads/{upload_id}/status")

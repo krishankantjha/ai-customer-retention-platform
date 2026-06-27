@@ -67,5 +67,6 @@ class CustomerExplainResponse(BaseModel):
     cohort_persona: Optional[str] = None
     segmentation: Optional[SegmentDetail] = None
     simulations: Optional[List[SimulationDetail]] = None
+    customer_features: Optional[dict] = None
     predicted_at: datetime
 

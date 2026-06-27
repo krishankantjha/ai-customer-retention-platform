@@ -118,31 +118,34 @@ class AutoencoderWrapper:
         """
         Projects inputs into the bottleneck latent space (encoder half only).
 
-        Encoder forward pass:
-            h1     = ReLU(X  · W1 + b1)   — first hidden layer (→ 64)
-            latent = ReLU(h1 · W2 + b2)   — bottleneck layer   (→ 16)
-
         Parameters
         ----------
         X : np.ndarray
             Pre-processed feature matrix of shape (n_samples, n_features).
 
         Returns
-        -------
+        ----------
         np.ndarray
             Latent representation of shape (n_samples, latent_dim).
         """
         if self.mlp is None:
             raise ValueError("Autoencoder has not been fitted yet. Call fit() first.")
 
-        # Layer 0: input → 64 (first encoder layer)
-        w1 = self.mlp.coefs_[0]      # shape (n_features, 64)
-        b1 = self.mlp.intercepts_[0] # shape (64,)
-        h1 = np.maximum(np.dot(X, w1) + b1, 0)  # ReLU activation
+        # Handle backward compatibility based on loaded network architecture depth
+        n_layers = len(self.mlp.coefs_)
+        if n_layers == 2:
+            # Single hidden bottleneck layer architecture (input -> 16 -> output)
+            w1 = self.mlp.coefs_[0]
+            b1 = self.mlp.intercepts_[0]
+            latent = np.maximum(np.dot(X, w1) + b1, 0)
+            return latent
+        else:
+            # Multi-layer deep symmetric autoencoder (input -> 64 -> 16 -> 64 -> output)
+            w1 = self.mlp.coefs_[0]
+            b1 = self.mlp.intercepts_[0]
+            h1 = np.maximum(np.dot(X, w1) + b1, 0)
 
-        # Layer 1: 64 → latent_dim (bottleneck — the true latent representation)
-        w2 = self.mlp.coefs_[1]      # shape (64, latent_dim)
-        b2 = self.mlp.intercepts_[1] # shape (latent_dim,)
-        latent = np.maximum(np.dot(h1, w2) + b2, 0)  # ReLU activation
-
-        return latent
+            w2 = self.mlp.coefs_[1]
+            b2 = self.mlp.intercepts_[1]
+            latent = np.maximum(np.dot(h1, w2) + b2, 0)
+            return latent
