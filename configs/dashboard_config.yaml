@@ -1,0 +1,25 @@
+# Dashboard Interface and Prescriptive Recommendation Mapping
+
+theme:
+  mode: "dark"
+  primary_color: "#6366F1" # Indigo
+  secondary_color: "#F97316" # Orange
+  danger_color: "#EF4444" # Red
+
+risk_thresholds:
+  low_max: 0.30
+  medium_max: 0.70
+
+save_plays:
+  tech_support_save_play:
+    title: "Support Concierge"
+    description: "Provide a 1-year free trial of TechSupport or OnlineSecurity add-ons to improve stickiness."
+  billing_save_play:
+    title: "Billing Alignment Plan"
+    description: "Transition from manual paper checks or one-off payment methods to AutoPay (Credit Card/Bank Transfer)."
+  contract_save_play:
+    title: "Long-Term Retention Play"
+    description: "Proactively offer a discounted 1-year or 2-year contract rate to secure lock-in."
+  fiber_premium_save_play:
+    title: "Premium Engagement Outreach"
+    description: "Offer bundle incentives on StreamingTV or DeviceProtection for high-cost Fiber optic lines."

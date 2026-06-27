@@ -1,0 +1,80 @@
+# Model and Tuning Parameters for AI Customer Retention Platform
+
+random_seed: 42
+
+# Asymmetric cost coefficients (business metric optimization)
+cost_coefficients:
+  false_negative_cost: 5.0
+  false_positive_cost: 1.0
+
+# Class imbalance (SMOTE) parameters
+smote:
+  k_neighbors: 5
+
+# Benchmarking default operational classification threshold
+# NOTE: 0.528 is the user-locked default threshold for standard comparisons.
+# In production, based on asymmetric costs (FN=5, FP=1), the cost-optimal decision threshold
+# calculated via cost-sensitive decision theory is 0.167 (empirically 0.15 on validation sets).
+decision_threshold: 0.15
+
+# Feature selection settings (excluded from all models)
+pruned_columns:
+  - "binary__has_support"
+
+# Multi-collinearity exclusions (specifically for linear models like Logistic Regression)
+linear_model_exclusions:
+  - "binary__is_early_stage"
+  - "AvgMonthlyCharge"
+
+# Tuning search spaces for GridSearch/Optuna across 7-8 model families
+tuning:
+  logistic_regression:
+    C: [0.01, 0.1, 1.0, 10.0]
+    penalty: ["l1", "l2"]
+    solver: ["liblinear"]
+  random_forest:
+    n_estimators: [50, 100, 200]
+    max_depth: [5, 10, 15, null]
+    min_samples_split: [2, 5, 10]
+  adaboost:
+    n_estimators: [50, 100, 200]
+    learning_rate: [0.01, 0.1, 1.0]
+  gradient_boosting:
+    n_estimators: [50, 100, 150]
+    learning_rate: [0.01, 0.05, 0.1]
+    max_depth: [3, 4, 5]
+  xgboost:
+    max_depth: [3, 4, 5]
+    learning_rate: [0.01, 0.05, 0.1]
+    n_estimators: [50, 100, 150]
+    min_child_weight: [1, 3, 5]
+  lightgbm:
+    max_depth: [3, 4, 5]
+    learning_rate: [0.01, 0.05, 0.1]
+    n_estimators: [50, 100, 150]
+    num_leaves: [7, 15, 31]
+  mlp:
+    hidden_layer_sizes: [[50], [100], [50, 25]]
+    alpha: [0.0001, 0.001, 0.01]
+    learning_rate_init: [0.001, 0.01]
+
+# Champion model default training parameters
+champion_model:
+  algorithm: "xgboost"
+  learning_rate: 0.05
+  max_depth: 4
+  min_child_weight: 3
+  n_estimators: 150
+  eval_metric: "logloss"
+
+# Customer Segmentation Parameters (Phase 3 K-Means++)
+segmentation:
+  n_clusters: 3
+  continuous_features:
+    - "numeric__tenure"
+    - "numeric__MonthlyCharges"
+    - "numeric__addon_count"
+    - "numeric__commitment_score"
+    - "numeric__Contract"
+    - "numeric__AvgMonthlyCharge"
+    - "numeric__num_services"

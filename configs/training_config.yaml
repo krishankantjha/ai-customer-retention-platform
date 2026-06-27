@@ -1,0 +1,9 @@
+# Ingestion and Processed Dataset Paths for AI Customer Retention Platform
+
+data_paths:
+  raw_data: "data/raw/Telco_Customer_Churn.csv"
+  processed_dir: "data/processed"
+  clean_data: "data/processed/telco_churn_clean.csv"
+  train_features: "data/processed/train_features.csv"
+  test_features: "data/processed/test_features.csv"
+  artifacts_dir: "ml/artifacts"
