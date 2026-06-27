@@ -81,10 +81,10 @@ def render_dashboard_view(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
             font=dict(family="Inter, sans-serif", color="#94a3b8"),
-            margin=dict(t=20, b=20, l=20, r=20),
-            height=280,
+            margin=dict(t=20, b=60, l=20, r=20),
+            height=320,
             showlegend=True,
-            legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5)
+            legend=dict(orientation="h", yanchor="top", y=-0.1, xanchor="center", x=0.5)
         )
         st.plotly_chart(fig_pie, use_container_width=True)
 
@@ -151,11 +151,11 @@ def render_dashboard_view(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
             font=dict(family="Inter, sans-serif", color="#94a3b8"),
-            margin=dict(t=20, b=20, l=20, r=20),
-            height=280,
+            margin=dict(t=20, b=80, l=20, r=20),
+            height=320,
             yaxis_title="Monthly Charges ($)",
             xaxis_title="Timeline",
-            legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5)
+            legend=dict(orientation="h", yanchor="top", y=-0.2, xanchor="center", x=0.5)
         )
         st.plotly_chart(fig_trend, use_container_width=True)
 
