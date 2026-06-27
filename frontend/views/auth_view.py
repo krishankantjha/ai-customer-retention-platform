@@ -157,7 +157,7 @@ def render_auth_view(api_client: RetainIQAPIClient, primary_color_hex: str, seco
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
             box-shadow: 0 4px 18px rgba({rgb_primary[0]}, {rgb_primary[1]}, {rgb_primary[2]}, 0.35) !important;
             cursor: pointer !important;
-            margin-top: 1.2rem !important;
+            margin-top: 0.4rem !important;
         }}
         div[data-testid="stForm"] button[type="submit"]:hover {{
             filter: brightness(1.1) !important;
@@ -194,7 +194,7 @@ def render_auth_view(api_client: RetainIQAPIClient, primary_color_hex: str, seco
         .stTabs [data-baseweb="tab-list"] {{
             gap: 1.5rem !important;
             justify-content: center !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+            border-bottom: none !important;
             margin-bottom: 1rem !important;
         }}
         .stTabs [data-baseweb="tab"] {{
@@ -226,6 +226,10 @@ def render_auth_view(api_client: RetainIQAPIClient, primary_color_hex: str, seco
         /* Pull submit buttons up closer to the remember me checkbox and forgot password link */
         div[data-testid="stForm"] div[data-testid="column"] {{
             margin-bottom: -12px !important;
+        }}
+        div[data-testid="stForm"] div[data-testid="stHorizontalBlock"] {{
+            align-items: center !important;
+            margin-bottom: -10px !important;
         }}
     </style>""".replace("\n", " "), unsafe_allow_html=True)
     
@@ -406,7 +410,9 @@ def render_auth_view(api_client: RetainIQAPIClient, primary_color_hex: str, seco
                 new_username = st.text_input("Username", value="", placeholder="Choose a username", label_visibility="collapsed", key="signup_username")
                 
                 st.markdown("<div style='font-family: Inter, sans-serif; font-size: 0.85rem; font-weight: 500; color: #cbd5e1; margin-bottom: 6px; margin-top: 1.2rem;'>Password</div>", unsafe_allow_html=True)
-                new_password = st.text_input("Password", type="password", value="", placeholder="Choose a password (min. 6 chars)", label_visibility="collapsed", key="signup_password")
+                new_password = st.text_input("Password", type="password", value="", placeholder="Choose a password", label_visibility="collapsed", key="signup_password")
+                if new_password and len(new_password) < 6:
+                    st.markdown("<div style='color: #f87171; font-size: 0.78rem; margin-top: 6px; margin-bottom: -6px; font-family: Inter, sans-serif; font-weight: 500;'>Password must be at least 6 characters long</div>", unsafe_allow_html=True)
                 
                 st.markdown("<div style='font-family: Inter, sans-serif; font-size: 0.85rem; font-weight: 500; color: #cbd5e1; margin-bottom: 6px; margin-top: 1.2rem;'>Confirm Password</div>", unsafe_allow_html=True)
                 confirm_password = st.text_input("Confirm Password", type="password", value="", placeholder="Confirm your password", label_visibility="collapsed", key="signup_confirm_password")
