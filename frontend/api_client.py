@@ -36,6 +36,18 @@ class RetainIQAPIClient:
         except Exception as e:
             return 500, {"detail": f"Failed to connect to API server: {str(e)}"}
 
+    def register(self, username, password):
+        """Registers a new user account with custom credentials."""
+        try:
+            response = requests.post(
+                f"{self.base_url}/api/v1/auth/register",
+                json={"username": username, "password": password},
+                timeout=5
+            )
+            return response.status_code, response.json()
+        except Exception as e:
+            return 500, {"detail": f"Failed to connect to API server: {str(e)}"}
+
     def get_overview(self):
         """Fetches high-level cohort overview metrics."""
         try:

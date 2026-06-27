@@ -15,6 +15,7 @@ from app.database.base import Base
 from app.database.models.uploads import Upload
 from app.database.models.customer import Customer
 from app.database.models.prediction import Prediction
+from app.database.models.user import User
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

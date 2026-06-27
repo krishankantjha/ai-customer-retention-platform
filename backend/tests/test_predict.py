@@ -25,6 +25,7 @@ from app.database.base import Base
 from app.database.models.uploads import Upload
 from app.database.models.customer import Customer
 from app.database.models.prediction import Prediction
+from app.database.models.user import User
 
 client = TestClient(app)
 
@@ -44,6 +45,7 @@ def clean_tables():
     db.query(Prediction).delete()
     db.query(Customer).delete()
     db.query(Upload).delete()
+    db.query(User).delete()
     db.commit()
     db.close()
 
@@ -211,4 +213,26 @@ def test_upload_non_utf8_encoding():
     assert upload is not None
     assert upload.status == "completed"
     assert upload.row_count == 1
+
+
+def test_user_registration_and_authentication():
+    # 1. Register a new user
+    reg_resp = client.post("/api/v1/auth/register", json={"username": "customuser", "password": "custompassword"})
+    assert reg_resp.status_code == 201
+    assert reg_resp.json()["username"] == "customuser"
+    assert "id" in reg_resp.json()
+
+    # 2. Try registering the same username again (should fail)
+    duplicate_reg = client.post("/api/v1/auth/register", json={"username": "customuser", "password": "differentpassword"})
+    assert duplicate_reg.status_code == 400
+
+    # 3. Log in with the newly created credentials
+    login_resp = client.post("/api/v1/auth/login", data={"username": "customuser", "password": "custompassword"})
+    assert login_resp.status_code == 200
+    token = login_resp.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # 4. Use the JWT token to access a protected endpoint
+    overview_resp = client.get("/api/v1/analytics/overview", headers=headers)
+    assert overview_resp.status_code == 200
 

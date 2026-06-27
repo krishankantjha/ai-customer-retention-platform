@@ -13,14 +13,23 @@ oauth2_scheme = OAuth2PasswordBearer(
 )
 
 
-def authenticate_user(username: str, password: str) -> Optional[str]:
-    """Authenticate a user using configurations in settings."""
+from sqlalchemy.orm import Session
+from app.database.session import get_db
+
+def authenticate_user(db: Session, username: str, password: str) -> Optional[str]:
+    """Authenticate a user using settings configurations or database profiles."""
     if username == settings.ADMIN_USERNAME and verify_password(password, settings.ADMIN_PASSWORD_HASH):
         return username
+    
+    from app.database.models.user import User
+    user = db.query(User).filter(User.username == username).first()
+    if user and verify_password(password, user.hashed_password):
+        return username
+        
     return None
 
 
-def get_current_user(token: str = Depends(oauth2_scheme)) -> str:
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> str:
     """FastAPI dependency to extract and validate the JWT token, returning the username."""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -38,7 +47,12 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> str:
     except (JWTError, ValidationError):
         raise credentials_exception
     
-    if token_data.username != settings.ADMIN_USERNAME:
+    if token_data.username == settings.ADMIN_USERNAME:
+        return token_data.username
+        
+    from app.database.models.user import User
+    user = db.query(User).filter(User.username == token_data.username).first()
+    if not user:
         raise credentials_exception
         
     return token_data.username
