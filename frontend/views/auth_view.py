@@ -214,17 +214,21 @@ def render_auth_view(api_client: RetainIQAPIClient, primary_color_hex: str, seco
             color: #6366f1 !important;
             border-bottom: 2px solid #6366f1 !important;
         }}
+        .stTabs [data-baseweb="tab-highlight-id"] {{
+            display: none !important;
+        }}
+        
+        /* Hide default Streamlit Input instructions (Press Enter to submit form) */
+        div[data-testid="InputInstructions"] {{
+            display: none !important;
+        }}
+        
+        /* Pull submit buttons up closer to the remember me checkbox and forgot password link */
+        div[data-testid="stForm"] div[data-testid="column"] {{
+            margin-bottom: -12px !important;
+        }}
     </style>""".replace("\n", " "), unsafe_allow_html=True)
     
-    # 1. Float Top Right Pill: Secure Connection Banner
-    secure_pill_html = """
-    <div style="position: absolute; top: 30px; right: 45px; z-index: 999; display: flex; align-items: center; gap: 6px; padding: 6px 16px; background: rgba(15, 23, 42, 0.55); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 20px; color: #f8fafc; font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.5px; box-shadow: 0 4px 14px rgba(0,0,0,0.3);">
-        <svg role="img" aria-label="Secure Connection Shield" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-        Secure Login
-    </div>
-    """
-    st.markdown(secure_pill_html, unsafe_allow_html=True)
-
     # 2. Setup structural grid columns for Left informational / Right form panels
     _, col_left, col_right, _ = st.columns([0.1, 1.1, 0.9, 0.1])
     
@@ -260,7 +264,7 @@ def render_auth_view(api_client: RetainIQAPIClient, primary_color_hex: str, seco
                 </svg>
                 <div>
                     <span style="font-size: 2.2rem; font-weight: 800; font-family: 'Outfit', sans-serif; color: #ffffff; letter-spacing: -0.5px;">Retain<span style="color: #6366f1;">IQ</span></span>
-                    <div style="font-size: 0.8rem; color: #8b5cf6; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; font-family: 'Inter', sans-serif; margin-top: 1px;">AI Customer Retention Platform</div>
+                    <div style="font-size: 0.7rem; color: #8b5cf6; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; font-family: 'Inter', sans-serif; margin-top: 1px;">AI-Powered Customer Retention Intelligence Platform</div>
                 </div>
             </div>
 
@@ -315,13 +319,14 @@ def render_auth_view(api_client: RetainIQAPIClient, primary_color_hex: str, seco
             with st.form("login_form", clear_on_submit=False):
                 # Centered Lock graphic header inside card
                 lock_header_html = """
-                <div style="display: flex; justify-content: center; margin-bottom: 1rem;">
-                    <div style="background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 12px; width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; color: #a78bfa; box-shadow: 0 8px 16px rgba(0,0,0,0.3);">
-                        <svg role="img" aria-label="Lock Icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 1.5rem;">
+                    <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 12px; padding: 4px 10px; display: inline-flex; align-items: center; gap: 6px; color: #10b981; font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1rem;">
+                        <svg role="img" aria-label="Secure Connection Shield" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        Secure Connection
                     </div>
+                    <h2 style="text-align: center; margin: 0; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1.7rem; color: #f8fafc;">Welcome Back</h2>
+                    <p style="text-align: center; margin: 0.3rem 0 0 0; color: #94a3b8; font-size: 0.88rem; font-family: 'Inter', sans-serif;">Sign in to access your RetainIQ dashboard</p>
                 </div>
-                <h2 style="text-align: center; margin: 0; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1.7rem; color: #f8fafc;">Welcome Back</h2>
-                <p style="text-align: center; margin: 0.3rem 0 2rem 0; color: #94a3b8; font-size: 0.88rem; font-family: 'Inter', sans-serif;">Sign in to access your RetainIQ dashboard</p>
                 """
                 st.markdown(lock_header_html, unsafe_allow_html=True)
                 
@@ -337,7 +342,7 @@ def render_auth_view(api_client: RetainIQAPIClient, primary_color_hex: str, seco
                 with c_chk:
                     remember_me = st.checkbox("Remember Me", value=True, key="login_remember")
                 with c_lnk:
-                    st.markdown("<div style='text-align: right; font-family: Inter, sans-serif; font-size: 0.85rem; margin-top: 4px;'><a href='#' style='color: #6366f1; text-decoration: none; font-weight: 500;'>Forgot Password?</a></div>", unsafe_allow_html=True)
+                    st.markdown("<div style='text-align: right; font-family: Inter, sans-serif; font-size: 0.85rem; margin-top: 7px;'><a href='#' style='color: #6366f1; text-decoration: none; font-weight: 500;'>Forgot Password?</a></div>", unsafe_allow_html=True)
                 
                 submitted = st.form_submit_button("Login to Dashboard   →")
                 
@@ -356,6 +361,13 @@ def render_auth_view(api_client: RetainIQAPIClient, primary_color_hex: str, seco
                 
                 <div style="text-align: center; font-size: 0.78rem; color: #64748b; font-family: 'Inter', sans-serif; margin-top: 1.8rem; line-height: 1.4;">
                     By continuing, you agree to our <a href="#" style="color: #94a3b8; text-decoration: none; border-bottom: 1px dotted #94a3b8;">Terms of Service</a> and <a href="#" style="color: #94a3b8; text-decoration: none; border-bottom: 1px dotted #94a3b8;">Privacy Policy</a>
+                </div>
+                
+                <div style="display: flex; justify-content: center; margin-top: 1.5rem; margin-bottom: 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 6px; padding: 4px 12px; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 20px; color: #10b981; font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 500;">
+                        <svg role="img" aria-label="Encryption Padlock" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        Encrypted Connection
+                    </div>
                 </div>
                 """
                 st.markdown(divider_and_sso_html.replace("\n", " "), unsafe_allow_html=True)
@@ -379,13 +391,14 @@ def render_auth_view(api_client: RetainIQAPIClient, primary_color_hex: str, seco
             with st.form("signup_form", clear_on_submit=False):
                 # Centered Sign Up graphic header inside card
                 signup_header_html = """
-                <div style="display: flex; justify-content: center; margin-bottom: 1rem;">
-                    <div style="background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 12px; width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; color: #a78bfa; box-shadow: 0 8px 16px rgba(0,0,0,0.3);">
-                        <svg role="img" aria-label="User Plus Icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+                <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 1.5rem;">
+                    <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 12px; padding: 4px 10px; display: inline-flex; align-items: center; gap: 6px; color: #10b981; font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1rem;">
+                        <svg role="img" aria-label="Secure Connection Shield" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        Secure Connection
                     </div>
+                    <h2 style="text-align: center; margin: 0; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1.7rem; color: #f8fafc;">Create Account</h2>
+                    <p style="text-align: center; margin: 0.3rem 0 0 0; color: #94a3b8; font-size: 0.88rem; font-family: 'Inter', sans-serif;">Register to set up your profile and dashboard</p>
                 </div>
-                <h2 style="text-align: center; margin: 0; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1.7rem; color: #f8fafc;">Create Account</h2>
-                <p style="text-align: center; margin: 0.3rem 0 2rem 0; color: #94a3b8; font-size: 0.88rem; font-family: 'Inter', sans-serif;">Register to set up your profile and dashboard</p>
                 """
                 st.markdown(signup_header_html, unsafe_allow_html=True)
                 
@@ -398,7 +411,25 @@ def render_auth_view(api_client: RetainIQAPIClient, primary_color_hex: str, seco
                 st.markdown("<div style='font-family: Inter, sans-serif; font-size: 0.85rem; font-weight: 500; color: #cbd5e1; margin-bottom: 6px; margin-top: 1.2rem;'>Confirm Password</div>", unsafe_allow_html=True)
                 confirm_password = st.text_input("Confirm Password", type="password", value="", placeholder="Confirm your password", label_visibility="collapsed", key="signup_confirm_password")
                 
+                # Symmetrical vertical padding spacer instead of checkbox row
+                st.markdown("<div style='margin-top: 1.5rem;'></div>", unsafe_allow_html=True)
+                
                 register_submitted = st.form_submit_button("Register Account   →")
+                
+                # Bottom Terms and connection badge inside signup tab for perfect height symmetry
+                signup_footer_html = """
+                <div style="text-align: center; font-size: 0.78rem; color: #64748b; font-family: 'Inter', sans-serif; margin-top: 1.8rem; line-height: 1.4;">
+                    By continuing, you agree to our <a href="#" style="color: #94a3b8; text-decoration: none; border-bottom: 1px dotted #94a3b8;">Terms of Service</a> and <a href="#" style="color: #94a3b8; text-decoration: none; border-bottom: 1px dotted #94a3b8;">Privacy Policy</a>
+                </div>
+                
+                <div style="display: flex; justify-content: center; margin-top: 1.5rem; margin-bottom: 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 6px; padding: 4px 12px; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 20px; color: #10b981; font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 500;">
+                        <svg role="img" aria-label="Encryption Padlock" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        Encrypted Connection
+                    </div>
+                </div>
+                """
+                st.markdown(signup_footer_html.replace("\n", " "), unsafe_allow_html=True)
                 
                 if register_submitted:
                     if not new_username or not new_password or not confirm_password:
@@ -417,15 +448,5 @@ def render_auth_view(api_client: RetainIQAPIClient, primary_color_hex: str, seco
                             else:
                                 detail = res_data.get("detail", "Registration failed")
                                 st.error(f"Registration failed: {detail}")
-                            
-    # 3. Bottom Centered Encrypted Data Banner - Reduced dominance, softer background, lighter shadow
-    bottom_encrypt_html = """
-    <div style="display: flex; justify-content: center; margin-top: 4rem;">
-        <div style="display: flex; align-items: center; gap: 8px; padding: 6px 16px; background: rgba(15, 23, 42, 0.2); border: 1px solid rgba(255, 255, 255, 0.03); border-radius: 20px; color: #64748b; font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 500; box-shadow: none;">
-            <svg role="img" aria-label="Encryption Padlock" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            Your data is encrypted and secure
-        </div>
-    </div>
-    """
-    st.markdown(bottom_encrypt_html, unsafe_allow_html=True)
+                                
     st.stop()

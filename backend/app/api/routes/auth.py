@@ -38,6 +38,8 @@ from app.database.models.user import User
 from app.core.security import get_password_hash
 from app.core.config import settings
 
+from sqlalchemy.exc import SQLAlchemyError
+
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def register_user(user_in: UserCreate, db: Session = Depends(get_db)):
     """Register a new user account with secure Bcrypt password hashing."""
@@ -48,18 +50,25 @@ def register_user(user_in: UserCreate, db: Session = Depends(get_db)):
             detail="Username already registered"
         )
         
-    # Check if user already exists in db
-    existing_user = db.query(User).filter(User.username == user_in.username).first()
-    if existing_user:
+    try:
+        # Check if user already exists in db
+        existing_user = db.query(User).filter(User.username == user_in.username).first()
+        if existing_user:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Username already registered"
+            )
+            
+        # Hash password and save
+        hashed = get_password_hash(user_in.password)
+        new_user = User(username=user_in.username, hashed_password=hashed)
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+        return new_user
+    except SQLAlchemyError as e:
+        db.rollback()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Username already registered"
+            detail="Database tables not found. Please run database migrations first."
         )
-        
-    # Hash password and save
-    hashed = get_password_hash(user_in.password)
-    new_user = User(username=user_in.username, hashed_password=hashed)
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return new_user
