@@ -117,3 +117,10 @@
 {"timestamp": "2026-06-27T11:28:39.405167Z", "customer_id": "5678-BBBB", "churn_probability": 0.28, "is_high_risk": true, "cluster": 1}
 {"timestamp": "2026-06-27T11:28:39.530038Z", "customer_id": "1234-AAAA", "churn_probability": 0.12, "is_high_risk": false, "cluster": 0}
 {"timestamp": "2026-06-27T11:28:39.530038Z", "customer_id": "5678-BBBB", "churn_probability": 0.28, "is_high_risk": false, "cluster": 1}
+{"timestamp": "2026-06-27T11:45:29.460418Z", "customer_id": "1234-ABCD", "churn_probability": 0.9386857867240905, "is_high_risk": true, "cluster": 1}
+{"timestamp": "2026-06-27T11:45:29.460418Z", "customer_id": "5678-EFGH", "churn_probability": 0.30223587453365325, "is_high_risk": true, "cluster": 2}
+{"timestamp": "2026-06-27T11:45:31.580898Z", "customer_id": "9999-\u00e9XYZ", "churn_probability": 0.9386857867240905, "is_high_risk": true, "cluster": 1}
+{"timestamp": "2026-06-27T11:45:31.866756Z", "customer_id": "1234-AAAA", "churn_probability": 0.12, "is_high_risk": false, "cluster": 0}
+{"timestamp": "2026-06-27T11:45:31.866756Z", "customer_id": "5678-BBBB", "churn_probability": 0.28, "is_high_risk": true, "cluster": 1}
+{"timestamp": "2026-06-27T11:45:31.998363Z", "customer_id": "1234-AAAA", "churn_probability": 0.12, "is_high_risk": false, "cluster": 0}
+{"timestamp": "2026-06-27T11:45:31.998363Z", "customer_id": "5678-BBBB", "churn_probability": 0.28, "is_high_risk": false, "cluster": 1}
