@@ -97,7 +97,6 @@ def render_segments_view(
                 </div>
                 <p style="color: #cbd5e1; font-size: 0.85rem; line-height: 1.4; margin: 0 0 1rem 0;">{meta['desc']}</p>
             </div>
-            
             <div style="border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 0.8rem;">
                 <div style="font-weight: 600; font-size: 0.78rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px;">Save Play Campaign</div>
                 <div style="font-size: 0.82rem; color: #f1f5f9; line-height: 1.3;">{meta['save_play']}</div>
