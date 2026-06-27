@@ -190,32 +190,50 @@ def render_auth_view(api_client: RetainIQAPIClient, primary_color_hex: str, seco
             transform: translateY(-1px) !important;
         }}
         
-        /* Custom styled tabs to match the premium theme */
+        /* Segmented pill tab buttons (no underlines, Apple/Stripe style) */
         .stTabs [data-baseweb="tab-list"] {{
-            gap: 1.5rem !important;
+            gap: 0.5rem !important;
             justify-content: center !important;
-            border-bottom: none !important;
-            margin-bottom: 1rem !important;
+            background: rgba(15, 23, 42, 0.45) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            border-radius: 20px !important;
+            padding: 4px 6px !important;
+            margin-bottom: 1.5rem !important;
         }}
         .stTabs [data-baseweb="tab"] {{
             font-family: 'Outfit', sans-serif !important;
             font-weight: 600 !important;
-            font-size: 1.05rem !important;
+            font-size: 0.92rem !important;
             color: #94a3b8 !important;
             background-color: transparent !important;
             border: none !important;
-            padding: 0.5rem 1rem !important;
+            border-radius: 16px !important;
+            padding: 0.45rem 1.4rem !important;
             transition: all 0.2s !important;
         }}
         .stTabs [data-baseweb="tab"]:hover {{
             color: #f8fafc !important;
+            background-color: rgba(255, 255, 255, 0.03) !important;
         }}
         .stTabs [aria-selected="true"] {{
-            color: #6366f1 !important;
-            border-bottom: 2px solid #6366f1 !important;
+            color: #ffffff !important;
+            background-color: rgba(255, 255, 255, 0.08) !important;
+            border: none !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
         }}
         .stTabs [data-baseweb="tab-highlight-id"] {{
             display: none !important;
+        }}
+        
+        /* Subtle radial ambient glow behind left brand panel to balance empty space */
+        .brand-container {{
+            background: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.05) 0%, transparent 60%),
+                        radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 60%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.02) !important;
+            border-radius: 24px !important;
+            padding: 3rem 2rem !important;
+            margin-top: 1rem !important;
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.01) !important;
         }}
         
         /* Hide default Streamlit Input instructions (Press Enter to submit form) */
@@ -239,9 +257,9 @@ def render_auth_view(api_client: RetainIQAPIClient, primary_color_hex: str, seco
     with col_left:
         # Left branding block & Product values
         branding_html = f"""
-        <div class="brand-container" style="padding-right: 1.5rem; font-family: 'Inter', sans-serif;">
+        <div class="brand-container" style="padding: 3.5rem 2.5rem; font-family: 'Inter', sans-serif; margin-top: 1.5rem; margin-bottom: 1.5rem;">
             <!-- Premium Logo -->
-            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 2.5rem;">
+            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 3.5rem;">
                 <svg role="img" aria-label="RetainIQ Crystal Logo" width="48" height="48" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <polygon points="50,10 85,35 85,65 50,90 15,65 15,35" fill="url(#gemGrad)" />
                     <polygon points="50,10 50,90 85,65 85,35" fill="url(#gemGlow)" opacity="0.6" />
@@ -279,7 +297,7 @@ def render_auth_view(api_client: RetainIQAPIClient, primary_color_hex: str, seco
                     <span style="background: linear-gradient(135deg, #a78bfa, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Understand customers.</span><br>
                     Retain revenue.
                 </h1>
-                <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.6; font-family: 'Inter', sans-serif; margin-bottom: 3rem; max-width: 480px;">
+                <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.6; font-family: 'Inter', sans-serif; margin-bottom: 4.5rem; max-width: 480px;">
                     RetainIQ uses advanced AI and explainable models to identify at-risk customers, uncover key drivers of churn, and recommend actions that drive retention and revenue growth.
                 </p>
             </div>

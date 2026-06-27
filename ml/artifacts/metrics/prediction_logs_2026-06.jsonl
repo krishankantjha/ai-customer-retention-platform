@@ -136,3 +136,6 @@
 {"timestamp": "2026-06-27T17:25:14.829491Z", "customer_id": "1234-ABCD", "churn_probability": 0.9386857867240905, "is_high_risk": true, "cluster": 1}
 {"timestamp": "2026-06-27T17:25:14.829491Z", "customer_id": "5678-EFGH", "churn_probability": 0.30223587453365325, "is_high_risk": true, "cluster": 2}
 {"timestamp": "2026-06-27T17:25:16.879232Z", "customer_id": "9999-\u00e9XYZ", "churn_probability": 0.9386857867240905, "is_high_risk": true, "cluster": 1}
+{"timestamp": "2026-06-27T20:30:44.714015Z", "customer_id": "1234-ABCD", "churn_probability": 0.9386857867240905, "is_high_risk": true, "cluster": 1}
+{"timestamp": "2026-06-27T20:30:44.714015Z", "customer_id": "5678-EFGH", "churn_probability": 0.30223587453365325, "is_high_risk": true, "cluster": 2}
+{"timestamp": "2026-06-27T20:30:47.079830Z", "customer_id": "9999-\u00e9XYZ", "churn_probability": 0.9386857867240905, "is_high_risk": true, "cluster": 1}
