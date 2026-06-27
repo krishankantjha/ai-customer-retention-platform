@@ -368,20 +368,9 @@ def render_auth_view(api_client: RetainIQAPIClient, primary_color_hex: str, seco
                 
                 submitted = st.form_submit_button("Login to Dashboard   →")
                 
-                # Divider and visual Token secondary button
-                divider_and_sso_html = """
-                <div style="display: flex; align-items: center; margin: 1.5rem 0; font-family: 'Inter', sans-serif; font-size: 0.85rem; color: #475569;">
-                    <div style="flex: 1; height: 1px; background: rgba(255, 255, 255, 0.08);"></div>
-                    <span style="padding: 0 10px; text-transform: uppercase; font-size: 0.72rem; font-weight: 600; letter-spacing: 1px; color: #64748b;">or</span>
-                    <div style="flex: 1; height: 1px; background: rgba(255, 255, 255, 0.08);"></div>
-                </div>
-                
-                <div class="sso-btn" style="border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 0.75rem 0; text-align: center; font-weight: 600; font-size: 0.9rem; color: #f8fafc; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; gap: 8px; background-color: rgba(255,255,255,0.01); transition: all 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: pointer;">
-                    <svg role="img" aria-label="Token Key Shield" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                    Login with Token
-                </div>
-                
-                <div style="text-align: center; font-size: 0.78rem; color: #64748b; font-family: 'Inter', sans-serif; margin-top: 1.8rem; line-height: 1.4;">
+                # Footer Terms and Encryption status (no SSO button)
+                footer_html = """
+                <div style="text-align: center; font-size: 0.78rem; color: #64748b; font-family: 'Inter', sans-serif; margin-top: 2rem; line-height: 1.4;">
                     By continuing, you agree to our <a href="#" style="color: #94a3b8; text-decoration: none; border-bottom: 1px dotted #94a3b8;">Terms of Service</a> and <a href="#" style="color: #94a3b8; text-decoration: none; border-bottom: 1px dotted #94a3b8;">Privacy Policy</a>
                 </div>
                 
@@ -392,7 +381,7 @@ def render_auth_view(api_client: RetainIQAPIClient, primary_color_hex: str, seco
                     </div>
                 </div>
                 """
-                st.markdown(divider_and_sso_html.replace("\n", " "), unsafe_allow_html=True)
+                st.markdown(footer_html.replace("\n", " "), unsafe_allow_html=True)
                 
                 if submitted:
                     if not username or not password:
