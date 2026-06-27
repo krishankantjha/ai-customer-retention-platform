@@ -280,7 +280,6 @@ def render_counterfactual_view(
         st.markdown(f"""
         <div class="glass-card" style="text-align: center !important;">
             <div style="font-size: 1.2rem; font-weight: 800; color: {status_color}; text-transform: uppercase; margin-bottom: 0.8rem;">{status_class}</div>
-            
             <div style="display: flex; justify-content: space-around; margin-bottom: 1.2rem; border-top: 1px solid rgba(255, 255, 255, 0.05); border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding: 0.8rem 0;">
                 <div>
                     <span style="color: #94a3b8; font-size: 0.78rem;">Risk Reduced</span><br>
@@ -291,7 +290,6 @@ def render_counterfactual_view(
                     <span style="font-weight: 600; color: #cbd5e1; font-size: 1.0rem;">{orig_prob*100:.1f}%</span>
                 </div>
             </div>
-            
             <div>
                 <span style="color: #94a3b8; font-size: 0.8rem;">Estimated Revenue Saved</span><br>
                 <span style="font-weight: 800; color: #10b981; font-size: 1.6rem;">${annual_saved_revenue:,.2f}</span>
