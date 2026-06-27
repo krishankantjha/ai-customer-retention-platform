@@ -366,7 +366,7 @@ def render_auth_view(api_client: RetainIQAPIClient, primary_color_hex: str, seco
                 with c_lnk:
                     st.markdown("<div style='text-align: right; font-family: Inter, sans-serif; font-size: 0.85rem; margin-top: 7px;'><a href='#' style='color: #6366f1; text-decoration: none; font-weight: 500;'>Forgot Password?</a></div>", unsafe_allow_html=True)
                 
-                submitted = st.form_submit_button("Login to Dashboard   →")
+                submitted = st.form_submit_button("Login to Dashboard   →", use_container_width=True)
                 
                 # Footer Terms and Encryption status (no SSO button)
                 footer_html = """
@@ -427,7 +427,7 @@ def render_auth_view(api_client: RetainIQAPIClient, primary_color_hex: str, seco
                 # Symmetrical vertical padding spacer instead of checkbox row
                 st.markdown("<div style='margin-top: 1.5rem;'></div>", unsafe_allow_html=True)
                 
-                register_submitted = st.form_submit_button("Register Account   →")
+                register_submitted = st.form_submit_button("Register Account   →", use_container_width=True)
                 
                 # Bottom Terms and connection badge inside signup tab for perfect height symmetry
                 signup_footer_html = """
