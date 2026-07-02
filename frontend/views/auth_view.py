@@ -245,24 +245,36 @@ def render_auth_view(api_client: RetainIQAPIClient, primary_color_hex: str, seco
             display: none !important;
         }}
         
-        /* Pull submit buttons up closer to the remember me checkbox and forgot password link */
-        div[data-testid="stForm"] div[data-testid="column"] {{
-            margin-bottom: -12px !important;
-        }}
+        /* Align Remember Me checkbox and Forgot Password link row robustly */
         div[data-testid="stForm"] div[data-testid="stHorizontalBlock"] {{
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
             align-items: center !important;
-            margin-top: -16px !important;
-            margin-bottom: -12px !important;
+            justify-content: space-between !important;
+            margin-top: 0.8rem !important;
+            margin-bottom: 1rem !important;
+            gap: 1rem !important;
         }}
         
-        /* Shift the second column (Forgot Password link) up to line up with the checkbox text baseline */
+        /* Ensure individual columns don't wrap, stack, or have negative/excessive margins */
+        div[data-testid="stForm"] div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {{
+            width: auto !important;
+            flex: 1 1 auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }}
+        
+        /* Center "Forgot Password" link container text alignment */
         div[data-testid="stForm"] div[data-testid="stHorizontalBlock"] div[data-testid="column"]:nth-of-type(2) {{
-            margin-top: -6px !important;
+            display: flex !important;
+            justify-content: flex-end !important;
+            align-items: center !important;
         }}
         
-        /* Pull submit buttons up closer to the checkbox row */
+        /* Submit button spacing */
         div[data-testid="stFormSubmitButton"] {{
-            margin-top: -10px !important;
+            margin-top: 0.5rem !important;
         }}
     </style>""".replace("\n", " "), unsafe_allow_html=True)
     
@@ -377,7 +389,7 @@ def render_auth_view(api_client: RetainIQAPIClient, primary_color_hex: str, seco
                 # Columns layout for Remember Me and Forgot Password
                 c_chk, c_lnk = st.columns([1.1, 0.9])
                 with c_chk:
-                    remember_me = st.checkbox("Remember Me", value=True, key="login_remember")
+                    remember_me = st.checkbox("Remember Me", value=False, key="login_remember")
                 with c_lnk:
                     st.markdown("<div style='text-align: right; font-family: Inter, sans-serif; font-size: 0.85rem; margin-top: 0px;'><a href='#' style='color: #6366f1; text-decoration: none; font-weight: 500;'>Forgot Password?</a></div>", unsafe_allow_html=True)
                 
