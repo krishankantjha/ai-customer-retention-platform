@@ -278,7 +278,12 @@ def render_auth_view(api_client: RetainIQAPIClient, primary_color_hex: str, seco
         }}
         
         /* Hide the awkward vertical line caret inside the selectbox input */
-        div[data-testid="stSelectbox"] input {{
+        div[data-testid="stSelectbox"] input,
+        div[data-testid="stSelectbox"] [role="combobox"],
+        div[data-testid="stSelectbox"] [role="combobox"] *,
+        [data-baseweb="select"] input,
+        [data-baseweb="select"] [role="combobox"],
+        [data-baseweb="select"] [role="combobox"] * {{
             caret-color: transparent !important;
         }}
 
