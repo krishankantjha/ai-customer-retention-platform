@@ -485,12 +485,8 @@ def render_auth_view(api_client: RetainIQAPIClient, primary_color_hex: str, seco
                     st.markdown("<div style='font-family: Inter, sans-serif; font-size: 0.85rem; font-weight: 500; color: #cbd5e1; margin-bottom: 6px; margin-top: 1.2rem;'>Password</div>", unsafe_allow_html=True)
                     password = st.text_input("Password", type="password", value="", placeholder="Enter your password", label_visibility="collapsed", key="login_password")
                     
-                    # Columns layout for Remember Me and Forgot Password
-                    c_chk, c_lnk = st.columns([1.1, 0.9])
-                    with c_chk:
-                        remember_me = st.checkbox("Remember Me", value=False, key="login_remember")
-                    with c_lnk:
-                        st.markdown("<div style='text-align: right; font-family: Inter, sans-serif; font-size: 0.85rem; margin-top: 0px;'><a href='/?action=forgot' target='_self' style='color: #6366f1; text-decoration: none; font-weight: 500;'>Forgot Password?</a></div>", unsafe_allow_html=True)
+                    # Forgot Password link aligned to the right
+                    st.markdown("<div style='text-align: right; font-family: Inter, sans-serif; font-size: 0.85rem; margin-top: 10px; margin-bottom: 10px;'><a href='/?action=forgot' target='_self' style='color: #6366f1; text-decoration: none; font-weight: 500;'>Forgot Password?</a></div>", unsafe_allow_html=True)
                     
                     submitted = st.form_submit_button("Login to Dashboard   →", use_container_width=True)
                     
