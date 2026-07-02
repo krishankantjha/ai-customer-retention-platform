@@ -276,6 +276,17 @@ def render_auth_view(api_client: RetainIQAPIClient, primary_color_hex: str, seco
         div[data-testid="stFormSubmitButton"] {{
             margin-top: 0.5rem !important;
         }}
+        
+        /* Hide the awkward vertical line caret inside the selectbox input */
+        div[data-testid="stSelectbox"] input {{
+            caret-color: transparent !important;
+        }}
+
+        /* Force the hand/pointer icon when hovering over the selectbox */
+        div[data-testid="stSelectbox"], 
+        div[data-testid="stSelectbox"] * {{
+            cursor: pointer !important;
+        }}
     </style>""".replace("\n", " "), unsafe_allow_html=True)
     
     # 2. Setup structural grid columns for Left informational / Right form panels
